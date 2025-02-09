@@ -31,7 +31,7 @@ UserParameter=wireguard.peer.persistent-keepalive[*],wg show "$1" persistent-kee
 ### Macros
 
 |Macro|Description|Default|Example|
-|-|-|
+|-|-|-|-|
 |{$PFSENSE.WG.PEERS.WARN_IF_DC}|Peers list separated by `|` to fire a trigger if disconnected.|`Peer1|Peer2`|`Node1`<br>`Node1|Node2`|
 
 ### Tunnels discovery rule
@@ -40,7 +40,7 @@ A discovery rule to detect all tunnels created on the pfSense Wireguard
 
 #### Item Prototypes
 
-|ItemPrototype|Description|
+|Item Prototype|Description|
 |-|-|
 |VPN WG {#PFSENSE.WG.IFACE.TUNNEL}: Firewall Mark|Firewall mark value|
 |VPN WG {#PFSENSE.WG.IFACE.TUNNEL}: Listen port|Wireguard tunnel listen port|
@@ -56,7 +56,7 @@ A discovery rule to detect peers created on each tunnel on pfSense Wireguard
 
 #### Item Prototypes
 
-|ItemPrototype|Description|
+|Item Prototype|Description|
 |-|-|
 |Peer {#PFSENSE.WG.PEER.DESCR}@{#PFSENSE.WG.PEER.TUNNEL}: Name|Description/Name of the peer (as seen in pfsense wireguard status section|
 |Peer {#PFSENSE.WG.PEER.DESCR}@{#PFSENSE.WG.PEER.TUNNEL}: Bits received|Received bits by this client|
@@ -70,7 +70,7 @@ A discovery rule to detect peers created on each tunnel on pfSense Wireguard
 
 #### Trigger Prototypes
 
-|Trigger Prototype|Trigger expression|
+|Trigger Prototype|Description|
 |-|-|
 |Peer {#PFSENSE.WG.PEER.DESCR} disconnected for more than 3m|Checks if a peer has been disconnected for the last 3 minutes and if its description matches a defined pattern in the macro `{$PFSENSE.WG.PEERS.WARN_IF_DC}`|
 
