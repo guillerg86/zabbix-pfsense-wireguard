@@ -1,0 +1,241 @@
+zabbix_export:
+  version: '7.2'
+  template_groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: 5e53288b62004c9b83f37953c283982d
+      template: 'Template Wireguard on pfSense'
+      name: 'Template Wireguard on pfSense'
+      description: |
+        Template for Wireguard on pfSense (tested on pfSense 2.7.2)
+        
+        @author: Guille Rodriguez Gonzalez 
+        @github: https://github.com/guillerg86/
+        @linkedin: www.linkedin.com/in/guille-rodriguez-gonzalez
+      groups:
+        - name: Templates
+      discovery_rules:
+        - uuid: 33f2bf80380b4875b91edfa888bb1545
+          name: 'Tunnel discovery'
+          key: wireguard.interfaces.discover
+          delay: 1h
+          enabled_lifetime_type: DISABLE_AFTER
+          enabled_lifetime: 1d
+          item_prototypes:
+            - uuid: 20ae768e71b14af19615463d32a48993
+              name: 'VPN WG {#PFSENSE.WG.IFACE.TUNNEL}: Firewall Mark'
+              key: 'wireguard.interface.fwmark[{#PFSENSE.WG.IFACE.TUNNEL}]'
+              delay: 20m
+              history: '0'
+              value_type: CHAR
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 4h
+              tags:
+                - tag: Application
+                  value: 'Interface {#PFSENSE.WG.IFACE.TUNNEL}'
+                - tag: Application
+                  value: Wireguard
+            - uuid: f9bdff26df614d88bcd0f56831062296
+              name: 'VPN WG {#PFSENSE.WG.IFACE.TUNNEL}: Listen port'
+              key: 'wireguard.interface.listen-port[{#PFSENSE.WG.IFACE.TUNNEL}]'
+              delay: 20m
+              history: 7d
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              tags:
+                - tag: Application
+                  value: 'Interface {#PFSENSE.WG.IFACE.TUNNEL}'
+                - tag: Application
+                  value: Wireguard
+            - uuid: 50784af834ee47a9bafc0586b4f02f3a
+              name: 'VPN WG {#PFSENSE.WG.IFACE.TUNNEL}: Peers connected'
+              key: 'wireguard.interface.peers.connected[{#PFSENSE.WG.IFACE.TUNNEL}]'
+              history: 7d
+              tags:
+                - tag: Application
+                  value: 'Interface {#PFSENSE.WG.IFACE.TUNNEL}'
+                - tag: Application
+                  value: Wireguard
+            - uuid: 934a78b4200940fc915620e875ca71bf
+              name: 'VPN WG {#PFSENSE.WG.IFACE.TUNNEL}: Peers usage'
+              key: 'wireguard.interface.peers.connected_percent[{#PFSENSE.WG.IFACE.TUNNEL}]'
+              history: 7d
+              value_type: FLOAT
+              units: '%'
+              tags:
+                - tag: Application
+                  value: 'Interface {#PFSENSE.WG.IFACE.TUNNEL}'
+                - tag: Application
+                  value: Wireguard
+            - uuid: 4a724b031a85413aaa348bdc66893a94
+              name: 'VPN WG {#PFSENSE.WG.IFACE.TUNNEL}: Peers count'
+              key: 'wireguard.interface.peers.count[{#PFSENSE.WG.IFACE.TUNNEL}]'
+              delay: 20m
+              history: 7d
+              tags:
+                - tag: Application
+                  value: 'Interface {#PFSENSE.WG.IFACE.TUNNEL}'
+                - tag: Application
+                  value: Wireguard
+          lld_macro_paths:
+            - lld_macro: '{#PFSENSE.WG.IFACE.TUNNEL}'
+              path: $.tunnel
+          preprocessing:
+            - type: CSV_TO_JSON
+              parameters:
+                - ''
+                - ''
+                - '1'
+        - uuid: b87a391fa0074178925c80c30891eb51
+          name: 'Peers discovery'
+          key: wireguard.peers.discover
+          delay: 1h
+          enabled_lifetime_type: DISABLE_AFTER
+          enabled_lifetime: 1d
+          description: 'Discovers all peers in all tunnels.'
+          item_prototypes:
+            - uuid: dc3e0fcbd146407ea49e6889d20a1380
+              name: 'Peer {#PFSENSE.WG.PEER.DESCR}@{#PFSENSE.WG.PEER.TUNNEL}: Name'
+              key: 'wireguard.peer.description[{#PFSENSE.WG.PEER.TUNNEL},{#PFSENSE.WG.PEER.PUBKEY}]'
+              history: 7d
+              value_type: CHAR
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - 'return "{#PFSENSE.WG.PEER.DESCR}";'
+              tags:
+                - tag: Application
+                  value: 'WG Peer: {#PFSENSE.WG.PEER.DESCR}'
+                - tag: Application
+                  value: 'WG Tunnel: {#PFSENSE.WG.PEER.TUNNEL}'
+                - tag: Application
+                  value: Wireguard
+            - uuid: 9ca6b11085d64f4c81c120abc667e285
+              name: 'Peer {#PFSENSE.WG.PEER.DESCR}@{#PFSENSE.WG.PEER.TUNNEL}: Remote endpoint'
+              key: 'wireguard.peer.endpoint[{#PFSENSE.WG.PEER.TUNNEL},{#PFSENSE.WG.PEER.PUBKEY}]'
+              delay: 5m
+              history: 10d
+              value_type: CHAR
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 4h
+              tags:
+                - tag: Application
+                  value: 'WG Peer: {#PFSENSE.WG.PEER.DESCR}'
+                - tag: Application
+                  value: 'WG Tunnel: {#PFSENSE.WG.PEER.TUNNEL}'
+                - tag: Application
+                  value: Wireguard
+            - uuid: 6cf37b0cd3cb46e5992c07a7107ce035
+              name: 'Peer {#PFSENSE.WG.PEER.DESCR}@{#PFSENSE.WG.PEER.TUNNEL}: Status'
+              key: 'wireguard.peer.isconnected[{#PFSENSE.WG.PEER.TUNNEL},{#PFSENSE.WG.PEER.PUBKEY}]'
+              history: 10d
+              valuemap:
+                name: 'Wireguard peer connected'
+              tags:
+                - tag: Application
+                  value: 'WG Peer: {#PFSENSE.WG.PEER.DESCR}'
+                - tag: Application
+                  value: 'WG Tunnel: {#PFSENSE.WG.PEER.TUNNEL}'
+                - tag: Application
+                  value: Wireguard
+            - uuid: afac4a7e3c5a4640b58454e5537df245
+              name: 'Peer {#PFSENSE.WG.PEER.DESCR}@{#PFSENSE.WG.PEER.TUNNEL}: Latest handshake'
+              key: 'wireguard.peer.latest-handshake[{#PFSENSE.WG.PEER.TUNNEL},{#PFSENSE.WG.PEER.PUBKEY}]'
+              delay: 5m
+              history: 7d
+              units: unixtime
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 4h
+              tags:
+                - tag: Application
+                  value: 'WG Peer: {#PFSENSE.WG.PEER.DESCR}'
+                - tag: Application
+                  value: 'WG Tunnel: {#PFSENSE.WG.PEER.TUNNEL}'
+                - tag: Application
+                  value: Wireguard
+            - uuid: 1ebbf1787bcf4e15940453f1b319d89f
+              name: 'Peer {#PFSENSE.WG.PEER.DESCR}@{#PFSENSE.WG.PEER.TUNNEL}: Persistent keepalive'
+              key: 'wireguard.peer.persistent-keepalive[{#PFSENSE.WG.PEER.TUNNEL},{#PFSENSE.WG.PEER.PUBKEY}]'
+              delay: 5m
+              history: 7d
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      if (value == "off") return 0;
+                      return value;
+              tags:
+                - tag: Application
+                  value: 'WG Peer: {#PFSENSE.WG.PEER.DESCR}'
+                - tag: Application
+                  value: 'WG Tunnel: {#PFSENSE.WG.PEER.TUNNEL}'
+                - tag: Application
+                  value: Wireguard
+            - uuid: 1c7541fe6db64d94b8b180c2d88e6be3
+              name: 'Peer {#PFSENSE.WG.PEER.DESCR}@{#PFSENSE.WG.PEER.TUNNEL}: Bits received'
+              key: 'wireguard.peer.transfer.received[{#PFSENSE.WG.PEER.TUNNEL},{#PFSENSE.WG.PEER.PUBKEY}]'
+              history: 7d
+              units: Bps
+              preprocessing:
+                - type: SIMPLE_CHANGE
+              tags:
+                - tag: Application
+                  value: 'WG Peer: {#PFSENSE.WG.PEER.DESCR}'
+                - tag: Application
+                  value: 'WG Tunnel: {#PFSENSE.WG.PEER.TUNNEL}'
+                - tag: Application
+                  value: Wireguard
+            - uuid: f4381d9fb38241dfaa58c000f32cf49b
+              name: 'Peer {#PFSENSE.WG.PEER.DESCR}@{#PFSENSE.WG.PEER.TUNNEL}: Bits sent'
+              key: 'wireguard.peer.transfer.sent[{#PFSENSE.WG.PEER.TUNNEL},{#PFSENSE.WG.PEER.PUBKEY}]'
+              history: 7d
+              units: Bps
+              preprocessing:
+                - type: SIMPLE_CHANGE
+              tags:
+                - tag: Application
+                  value: 'WG Peer: {#PFSENSE.WG.PEER.DESCR}'
+                - tag: Application
+                  value: 'WG Tunnel: {#PFSENSE.WG.PEER.TUNNEL}'
+                - tag: Application
+                  value: Wireguard
+          trigger_prototypes:
+            - uuid: 6dedb3283c744e8e9e72841867b23387
+              expression: 'max(/Template Wireguard on pfSense/wireguard.peer.isconnected[{#PFSENSE.WG.PEER.TUNNEL},{#PFSENSE.WG.PEER.PUBKEY}],3m)=0 and find(/Template Wireguard on pfSense/wireguard.peer.description[{#PFSENSE.WG.PEER.TUNNEL},{#PFSENSE.WG.PEER.PUBKEY}],,"regexp","{$PFSENSE.WG.PEERS.WARN_IF_DC}")=1'
+              name: 'Peer {#PFSENSE.WG.PEER.DESCR} disconnected for more than 3m'
+              priority: WARNING
+              description: 'El peer se ha marcado en la macro para informar si está desconectado'
+          lld_macro_paths:
+            - lld_macro: '{#PFSENSE.WG.PEER.DESCR}'
+              path: $.descr
+            - lld_macro: '{#PFSENSE.WG.PEER.PUBKEY}'
+              path: $.peer
+            - lld_macro: '{#PFSENSE.WG.PEER.TUNNEL}'
+              path: $.tunnel
+          preprocessing:
+            - type: CSV_TO_JSON
+              parameters:
+                - ;
+                - ''
+                - '1'
+      macros:
+        - macro: '{$PFSENSE.WG.PEERS.WARN_IF_DC}'
+          value: Peer1|Peer2
+          description: Peers
+      valuemaps:
+        - uuid: 97ff6097832143ecbeca3680abb092c8
+          name: 'Wireguard peer connected'
+          mappings:
+            - value: '1'
+              newvalue: Connected
+            - value: '0'
+              newvalue: Disconnected
