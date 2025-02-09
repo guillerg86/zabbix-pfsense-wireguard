@@ -32,7 +32,7 @@ UserParameter=wireguard.peer.persistent-keepalive[*],wg show "$1" persistent-kee
 
 |Macro|Description|Default|Example|
 |-|-|-|-|
-|{$PFSENSE.WG.PEERS.WARN_IF_DC}|Peers list separated by `|` to fire a trigger if disconnected.|`Peer1|Peer2`|`Node1`<br>`Node1|Node2`|
+|{$PFSENSE.WG.PEERS.WARN_IF_DC}|Peers list separated by `\|` to fire a trigger if disconnected.|`Peer1\|Peer2`|`Node1`<br>`Node1\|Node2`|
 
 ### Tunnels discovery rule
 
