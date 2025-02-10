@@ -27,7 +27,7 @@ zabbix_export:
               name: 'VPN WG {#PFSENSE.WG.IFACE.TUNNEL}: Firewall Mark'
               key: 'wireguard.interface.fwmark[{#PFSENSE.WG.IFACE.TUNNEL}]'
               delay: 20m
-              history: '0'
+              history: 7d
               value_type: CHAR
               preprocessing:
                 - type: DISCARD_UNCHANGED_HEARTBEAT

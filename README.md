@@ -4,7 +4,7 @@ A template for monitoring Wireguard on pfSense.
 
 ## UserParameter (zabbix agent)
 
-Before install template, add this UserParameter on Zabbix Agent on pfSense configuration
+Before install template, add this UserParameter to Zabbix Agent configuration on pfSense
 
 ![screenshot](images/zabbix-agent-userparameters.png)
 
